@@ -1,0 +1,25 @@
+# MiMo Smart Agent Configuration
+# Supports environment variable references: ${VAR_NAME}
+
+api:
+  key: "${MIMO_API_KEY}"
+  base_url: "${MIMO_BASE_URL:-https://platform.xiaomimimo.com/api/v1}"
+  model: "${MIMO_MODEL:-MiMo-V2.5-Pro}"
+  temperature: ${MIMO_TEMPERATURE:-0.7}
+  max_tokens: ${MIMO_MAX_TOKENS:-8192}
+  timeout: 60
+
+agent:
+  name: "MiMo-Smart-Agent"
+  max_steps: 20
+  memory_type: "session"  # session | persistent
+  tools_enabled:
+    - web_search
+    - file_ops
+    - code_exec
+    - git_ops
+
+logging:
+  level: "INFO"
+  format: "json"  # json | text
+  file: "./logs/agent.log"
