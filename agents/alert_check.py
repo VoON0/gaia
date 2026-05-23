@@ -12,42 +12,16 @@ import os
 import sys
 from datetime import datetime
 
-# --- 配置 ---
-ALERTS_CONFIG = r"D:\Knowledge\config\alerts.json"
-STATE_FILE = r"D:\Knowledge\data\alert_state.json"
-DAPAN_SAVE_DIR = r"D:\Knowledge\大盘数据"
-
-# 飞书配置
-FEISHU_APP_ID = "cli_a97408dad2389bee"
-FEISHU_APP_SECRET = "2TFaYEA1VTHAFblIMTNudfSPP0gZPLiS"
-FEISHU_CHAT_ID = "oc_6c931269c43e3f8c1a0ba4a98a5ab958"
+# --- 配置（可通过环境变量覆盖）---
+BASE_DIR = os.environ.get("GAIA_BASE_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+ALERTS_CONFIG = os.environ.get("GAIA_ALERTS_CONFIG", os.path.join(BASE_DIR, "config", "alerts.json"))
+STATE_FILE = os.environ.get("GAIA_ALERT_STATE", os.path.join(BASE_DIR, "data", "alert_state.json"))
+DAPAN_SAVE_DIR = os.environ.get("GAIA_DAPAN_DIR", os.path.join(BASE_DIR, "data", "dapan"))
 
 def ensure_dir(path):
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
-def get_feishu_token():
-    """获取飞书tenant access token"""
-    url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
-    resp = requests.post(url, json={
-        "app_id": FEISHU_APP_ID,
-        "app_secret": FEISHU_APP_SECRET
-    }, timeout=10)
-    return resp.json().get("tenant_access_token", "")
-
-def push_feishu(content):
-    """推送到飞书"""
-    token = get_feishu_token()
-    if not token:
-        print("  ❌ 获取飞书token失败")
-        return False
-    
-    url = "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id"
-    resp = requests.post(url, headers={
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json; charset=utf-8"
-    }, json={
-        "receive_id": FEISHU_CHAT_ID,
-        "msg_type": "text",
+from shared.feishu import push_feishu, get_feishu_token
         "content": json.dumps({"text": content})
     }, timeout=10)
     

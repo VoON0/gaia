@@ -19,57 +19,25 @@ if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
 # ===== 核心路径 =====
-BASE_DIR = r"D:\openclaw-workspace"
-KNOWLEDGE_DIR = r"D:\Knowledge"
-STATE_DIR = r"D:\Knowledge\data"
+# ===== 核心路径（可通过环境变量覆盖）=====
+BASE_DIR = os.environ.get("GAIA_BASE_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+KNOWLEDGE_DIR = os.environ.get("GAIA_KNOWLEDGE_DIR", os.path.join(BASE_DIR, "knowledge"))
+STATE_DIR = os.environ.get("GAIA_STATE_DIR", os.path.join(BASE_DIR, "data"))
 os.makedirs(STATE_DIR, exist_ok=True)
 
 STATE_FILE = os.path.join(STATE_DIR, "orchestrator_state.json")
 EVOLUTION_FILE = os.path.join(STATE_DIR, "EVOLUTION.md")
-STEAMDT_DIR = os.path.join(KNOWLEDGE_DIR, "steamdt")
-DAPAN_DIR = os.path.join(KNOWLEDGE_DIR, "大盘数据")
-OUTPUT_DIR = os.path.join(KNOWLEDGE_DIR, "品类分析")
-ALERTS_FILE = os.path.join(KNOWLEDGE_DIR, "config", "alerts.json")
-OS_TEMP = r"D:\Knowledge\data"
+OUTPUT_DIR = os.path.join(KNOWLEDGE_DIR, "reports")
+ALERTS_FILE = os.path.join(BASE_DIR, "config", "alerts.json")
 
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(os.path.dirname(ALERTS_FILE), exist_ok=True)
-
-# === 路径交叉引用（供 self-heal 使用）===
-CRITICAL_FILES = {
-    "auto_upgrade.py": os.path.join(KNOWLEDGE_DIR, "scripts", "auto_upgrade.py"),
-    "INSTINCTS.md": os.path.join(BASE_DIR, ".learnings", "INSTINCTS.md"),
-    "MEMORY.md": os.path.join(BASE_DIR, "MEMORY.md"),
-}
-
-# 飞书配置
-FEISHU_APP_ID = "cli_a97408dad2389bee"
-FEISHU_APP_SECRET = "2TFaYEA1VTHAFblIMTNudfSPP0gZPLiS"
-FEISHU_CHAT_ID = "oc_6c931269c43e3f8c1a0ba4a98a5ab958"
 
 # ============================================================
 # 工具函数
 # ============================================================
 
-def get_feishu_token():
-    import requests
-    r = requests.post("https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal",
-                      json={"app_id": FEISHU_APP_ID, "app_secret": FEISHU_APP_SECRET}, timeout=10)
-    return r.json().get("tenant_access_token", "")
-
-def push_feishu(text):
-    """Push text to Feishu. Uses ensure_ascii=False + utf-8 headers to handle all Unicode chars."""
-    import requests
-    token = get_feishu_token()
-    if not token:
-        return False
-    body = {"receive_id": FEISHU_CHAT_ID, "msg_type": "text",
-            "content": json.dumps({"text": text}, ensure_ascii=False)}
-    r = requests.post(
-        "https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id",
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json; charset=utf-8"},
-        json=body, timeout=10)
-    return r.json().get("code") == 0
+from shared.feishu import push_feishu, get_feishu_token
 
 def load_state():
     try:

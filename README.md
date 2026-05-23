@@ -61,10 +61,9 @@ gaia/
 │   ├── orchestrator.py        # 分析编排引擎（三级下钻）
 │   ├── auto_upgrade.py        # 自进化系统（分析质量自省）
 │   └── alert_check.py         # 实时预警 Agent
-├── piplines/                  # 数据管道
+├── pipelines/                  # 数据管道
 │   ├── fetch_steamdt.py       # SteamDT 大盘数据拉取
-│   ├── fetch_csqaq.py         # CSQAQ 品类数据拉取
-│   └── collector.py           # Trae 驱动的批量采集器
+│   └── collector.py           # 批量采集器
 ├── knowledge/                 # 知识库
 │   ├── market_events.md       # V社更新历史事件库
 │   └── index_history.md       # 指数关键点位参考
@@ -81,8 +80,15 @@ gaia/
 git clone https://github.com/VoON0/gaia.git
 cd gaia
 
+# 配置（必须）
+cp .env.example .env
+# 编辑 .env 填入飞书 API Key
+
+# 安装依赖
+pip install -r requirements.txt
+
 # 运行采集
-python piplines/fetch_steamdt.py
+python pipelines/fetch_steamdt.py
 
 # 运行分析
 python agents/orchestrator.py

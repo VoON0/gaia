@@ -1,38 +1,7 @@
 import sys; sys.stdout.reconfigure(encoding='utf-8')
-import requests
-import json
-import time
+import json, time
 from datetime import datetime
-
-# ===== 配置 =====
-APP_ID = "cli_a97408dad2389bee"
-APP_SECRET = "2TFaYEA1VTHAFblIMTNudfSPP0gZPLiS"
-CHAT_ID = "oc_6c931269c43e3f8c1a0ba4a98a5ab958"
-
-def get_tenant_token():
-    url = "https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal"
-    body = {"app_id": APP_ID, "app_secret": APP_SECRET}
-    resp = requests.post(url, json=body, timeout=10).json()
-    print(f"[token] raw: {resp}")
-    return resp.get("tenant_access_token", "")
-
-def push_msg(token, content):
-    url = f"https://open.feishu.cn/open-apis/im/v1/messages?receive_id_type=chat_id"
-    headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json; charset=utf-8"
-    }
-    body = {
-        "receive_id": CHAT_ID,
-        "msg_type": "text",
-        "content": json.dumps({"text": content}, ensure_ascii=False)
-    }
-    resp = requests.post(url, headers=headers, data=json.dumps(body, ensure_ascii=False).encode('utf-8'), timeout=15)
-    ret = resp.json()
-    print(f"[push] status={resp.status_code}, code={ret.get('code')}, msg={ret.get('msg')}")
-    if ret.get("data", {}).get("message_id"):
-        print(f"[push] message_id: {ret['data']['message_id']}")
-    return ret
+from shared.feishu import push_feishu
 
 # ===== 正文内容 =====
 
@@ -87,4 +56,4 @@ AI交易相关爆发: polymarket-ai-trading×2, okx-agent-trade-kit, Pumpfun_AI_
 
 ━━━ AI前沿一句话 ━━━
 orthrus (326⭐) 提出双视图扩散解码实现无损LLM推理加速；elephant-agent (345⭐) 主打个人模型优先的自进化AI Agent；slopless (202⭐) 发布确定性textlint规则检测AI生成文本渣作。"""
-push_msg(get_tenant_token(), msg)
+push_feishu(msg, title="CS2 下午简报", msg_type="text")
