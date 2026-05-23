@@ -67,26 +67,19 @@ gaia/
 │   └── collector.py           # Trae 驱动的批量采集器
 ├── knowledge/                 # 知识库
 │   ├── market_events.md       # V社更新历史事件库
-│   ├── taxonomies/            # 品类分层分类法
-│   └── institution/           # 分析框架 & 结晶知识
+│   └── index_history.md       # 指数关键点位参考
 ├── skills/                    # 固化技能
 │   └── cs2-skin-market/       # CS2饰品市场分析 Skill
 ├── scripts/                   # 辅助工具
-│   ├── feishu_push.py         # 飞书消息推送
-│   └── daily_brief.py         # 简报生成
+│   └── push_feishu_evening.py # 飞书消息推送
 └── README.md
 ```
 
 ## 快速开始
 
 ```bash
-# Clone
-git clone https://github.com/VoON0/mimo-smart-agent.git gaia
+git clone https://github.com/VoON0/gaia.git
 cd gaia
-
-# 配置
-cp config.example.yaml config.yaml
-# 填入 API Key、飞书 Webhook 等
 
 # 运行采集
 python piplines/fetch_steamdt.py
@@ -94,15 +87,6 @@ python piplines/fetch_steamdt.py
 # 运行分析
 python agents/orchestrator.py
 ```
-
-## MIMO 算力申请说明
-
-本项目申请 MIMO Max 档位 Token 用于：
-
-1. **多模型投票验证** — 当前仅单模型（DeepSeek）分析，需要额外的模型并行验证提升判断准确率
-2. **批量回溯测试** — 对历史分析判断做全量回测，量化Agent的预测准确率，驱动自进化系统
-3. **时间序列预测** — 在 Agent 决策流中引入轻量市场趋势预测辅助模块
-4. **多 Agent 并行** — 采集、分析、自省三个 Agent 可以独立并行运行，互不阻塞
 
 ---
 
