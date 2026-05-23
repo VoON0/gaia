@@ -16,16 +16,14 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 sys.stdout.reconfigure(encoding='utf-8') if hasattr(sys.stdout, 'reconfigure') else None
 
 # === 核心路径 ===
-BASE_DIR = r"D:\openclaw-workspace"
-KNOWLEDGE_DIR = r"D:\Knowledge"
-STATE_DIR = r"D:\Knowledge\data"
+BASE_DIR = os.environ.get("GAIA_BASE_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+KNOWLEDGE_DIR = os.environ.get("GAIA_KNOWLEDGE_DIR", os.path.join(BASE_DIR, "knowledge"))
+STATE_DIR = os.environ.get("GAIA_STATE_DIR", os.path.join(BASE_DIR, "data"))
+os.makedirs(STATE_DIR, exist_ok=True)
+
 STATE_FILE = os.path.join(STATE_DIR, "upgrade_tracker.json")
-INSTINCTS_FILE = os.path.join(BASE_DIR, ".learnings", "INSTINCTS.md")
-LEARNINGS_FILE = os.path.join(BASE_DIR, ".learnings", "LEARNINGS.md")
-ERRORS_FILE = os.path.join(BASE_DIR, ".learnings", "ERRORS.md")
-FEATURES_FILE = os.path.join(BASE_DIR, ".learnings", "FEATURE_REQUESTS.md")
-SCRIPTS_DIR = os.path.join(KNOWLEDGE_DIR, "scripts")
-MEMORY_FILE = os.path.join(KNOWLEDGE_DIR, "..", "openclaw-workspace", "MEMORY.md")
+SCRIPTS_DIR = os.environ.get("GAIA_SCRIPTS_DIR", os.path.join(BASE_DIR, "pipelines"))
+MEMORY_FILE = os.path.join(BASE_DIR, "README.md")
 # 修正：INSTINCTS_FILE 里的路径是相对于 openclaw-workspace 的
 
 os.makedirs(STATE_DIR, exist_ok=True)
@@ -95,35 +93,16 @@ def check_redundancies(scripts):
 
 
 def count_instincts():
-    """统计现有 instinct 数量"""
-    try:
-        with open(INSTINCTS_FILE, 'r', encoding='utf-8') as f:
-            content = f.read()
-        count = len(re.findall(r'## INS-\d+', content))
-        # 支持新旧两种格式: **Conf**: 0.95 或 **Confidence**: 0.95
-        active = len(re.findall(r'\*\*Conf(?:idence)?\*\*: (?:0\.[89]\d?|1\.0)', content))
-        return count, active
-    except:
-        return 0, 0
+    """统计现有 instinct 数量（默认返回0，实际文件在 openclaw-workspace 侧）"""
+    return 0, 0
 
 
 def count_learnings():
-    """统计 learnings 数量"""
-    try:
-        with open(LEARNINGS_FILE, 'r', encoding='utf-8') as f:
-            content = f.read()
-        return len(re.findall(r'## \[LRN-', content))
-    except:
-        return 0
+    return 0
 
 
 def count_errors():
-    try:
-        with open(ERRORS_FILE, 'r', encoding='utf-8') as f:
-            content = f.read()
-        return len(re.findall(r'## \[ERR-', content))
-    except:
-        return 0
+    return 0
 
 
 def suggest_upgrades(scripts, state):

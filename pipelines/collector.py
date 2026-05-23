@@ -17,7 +17,7 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
-OUTPUT_DIR = os.environ.get("GAIA_KNOWLEDGE_DIR", r"D:\Knowledge")
+OUTPUT_DIR = os.environ.get("GAIA_KNOWLEDGE_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data"))
 DAPAN_DIR = os.environ.get("GAIA_DAPAN_DIR", os.path.join(OUTPUT_DIR, "大盘数据"))
 EXPERT_DIR = os.path.join(OUTPUT_DIR, "大神观点")
 GITHUB_DIR = os.environ.get("GAIA_GITHUB_DIR", os.path.join(OUTPUT_DIR, "GitHub热榜"))

@@ -6,7 +6,7 @@
 功能：
 1. 从 SteamDT 首页提取品类数据
 2. 分析品类排行榜 JSON
-3. 保存品类报告到 D:\Knowledge\品类分析\
+3. 保存品类报告到品类分析目录
 """
 
 import os, sys, json, re, requests
@@ -16,9 +16,11 @@ os.environ['PYTHONIOENCODING'] = 'utf-8'
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
 
-STEAMDT_DIR = r"D:\Knowledge\steamdt"
-DAPAN_DIR = r"D:\Knowledge\大盘数据"
-OUTPUT_DIR = r"D:\Knowledge\品类分析"
+BASE_DIR = os.environ.get("GAIA_BASE_DIR", os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+STEAMDT_DIR = os.environ.get("GAIA_DAPAN_DIR", os.path.join(BASE_DIR, "data", "dapan"))
+DAPAN_DIR = os.environ.get("GAIA_DAPAN_DIR", os.path.join(BASE_DIR, "data", "dapan"))
+OUTPUT_DIR = os.environ.get("GAIA_REPORTS_DIR", os.path.join(BASE_DIR, "data", "reports"))
+os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(DAPAN_DIR, exist_ok=True)
 
